@@ -21,6 +21,7 @@
                 <input type="submit" value="Call" id="call">
                 <input type="submit" value="Hangup" id="hangup">
                 <input type="submit" value="Answer" id="answer">
+                <input type="submit" value="Chat" id="chat">
             </form>
 
             <!-- Will show updates on the current call -->
@@ -30,5 +31,16 @@
             <video id="outgoing" autoplay></video>
             <video id="incoming" autoplay></video>
         </div>
+        
+        <!=Hidden unitil chat isnt started-->> 
+        <div id="chat" style="display:none;">
+            <form id="newMessage">
+                   <input id="message" placeholder="message">
+                   <button id="sendMsg">Send</button>
+            </form>
+            
+            <div id="chatArea"></div>
+        </div>                       
+        <div class="error"></div>
     </body>
 </html>
