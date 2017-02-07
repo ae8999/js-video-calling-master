@@ -85,6 +85,7 @@ $("document").ready(function() {
         if (call) {
             $("div#status").append("<div>You started chat with</div>" + usernameToCall);
             $('div#chat').show();
+	    $('div#chatArea').show();
             global_recipient = $('input#usernameToCall').val();
         }
     });
