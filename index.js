@@ -1,13 +1,18 @@
 $("document").ready(function() {
     sinchClient = new SinchClient({
         applicationKey: "428b9043-a2bc-4334-8f97-6377085b3f36",
-        capabilities: {calling: true, video: true},
+        capabilities: {calling: true, video: true, messaging: true},
         supportActiveConnection: true,
         onLogMessage: function(message) {
             console.log(message.message);
         },
     });
-
+    
+    var clearError = function() {
+	$('div.error').text("");
+    }
+    var global_username = '';
+    var global_recipient = '';
     var callClient;
     var call;
 
@@ -17,7 +22,7 @@ $("document").ready(function() {
         var signUpObj = {};
         signUpObj.username = $("input#username").val();
         signUpObj.password = $("input#password").val();
-
+        global_username = $('input#username').val();
         sinchClient.start(signUpObj, afterStartSinchClient());          
     });
 
@@ -27,7 +32,7 @@ $("document").ready(function() {
         var signUpObj = {};
         signUpObj.username = $("input#username").val();
         signUpObj.password = $("input#password").val();
-
+        global_username = $('input#username').val();
         sinchClient.newUser(signUpObj, function(ticket) {
             sinchClient.start(ticket, afterStartSinchClient());
         });
@@ -74,7 +79,42 @@ $("document").ready(function() {
         	call = null
         }
     });
+    
+    $("#chat").click(function(event) {
+        event.preventDefault();
+        if (call) {
+            $("div#status").append("<div>You started chat with</div>" + usernameToCall);
+            $('div#chat').show();
+            global_recipient = $('input#usernameToCall').val();
+        }
+    });
+    
+var messageClient = sinchClient.getMessageClient();
 
+$('button#sendMsg').on('click', function(event) {
+	event.preventDefault();
+	clearError();
+
+	var text = $('input#message').val();
+    $('input#message').val('');
+	var sinchMessage = messageClient.newMessage(global_recipient, text);
+	messageClient.send(sinchMessage).fail(handleError);
+});
+
+var eventListener = {
+	onIncomingMessage: function(message) {
+        if (message.senderId == global_username) {
+            $('div#chatArea').append('<div>' + message.textBody + '</div>');
+        } else {
+            $('div#chatArea').append('<div style="color:red;">' + message.textBody + '</div>');
+        }		
+	}
+}
+
+messageClient.addEventListener(eventListener);
+    
+    
+    
     var incomingCallListener = {
         onIncomingCall: function(incomingCall) {
             $("div#status").append("<div>Incoming Call</div>");
